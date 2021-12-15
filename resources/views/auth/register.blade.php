@@ -61,12 +61,18 @@
                             </div>
                         </div>
 
-                        <div class="form-group row mb-0">
+                        <div class="form-group row mb-4">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Register') }}
                                 </button>
                             </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <a href="/login/facebook" class="btn btn-info mx-auto" role="button">
+                                Login with Facebook <span><i class="fab fa-facebook"></i></span>
+                            </a>
                         </div>
                     </form>
                 </div>
