@@ -21,7 +21,14 @@ Auth::routes(['verify' => true]);
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
+
+    // Social routes
+    Route::get('login/{provider}', 'Auth\SocialController@redirectToProvider');
+    Route::get('login/{provider}/callback', 'Auth\SocialController@handleProviderCallback');
+
+    // Card routes
+    Route::get('cards', 'CardController@index')->name('cards.index');
+    Route::post('cards', 'CardController@store')->name('cards.store');
+    Route::delete('cards/{card}', 'CardController@destroy')->name('cards.destroy');
 });
 
-Route::get('login/{provider}', 'Auth\SocialController@redirectToProvider');
-Route::get('login/{provider}/callback', 'Auth\SocialController@handleProviderCallback');

@@ -36,4 +36,12 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the cards for the user.
+     */
+    public function cards()
+    {
+        return $this->hasMany('App\Models\Card');
+    }
 }
