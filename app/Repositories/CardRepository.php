@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Contracts\Repositories\CardRepository as CardRepositoryInterface;
+use App\Finance\CardServices;
 use App\Models\Card;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,16 @@ class CardRepository implements CardRepositoryInterface
 
     public function getActiveCards()
     {
-        return Auth()->user()->cards()->active()->get();
+        $cards = Auth()->user()->cards()->active()->get();
+
+        return $cards->map(function ($card, $key) {
+            $cardService = CardServices::getServices()[$card->type];
+            return $cardService->getCardHolderInfo($card->toArray()) + [
+                    'id' => $card->id,
+                    'number' => $card->number,
+                    'type' => $card->type
+                ];
+        });
     }
 
     public function getCardByTypeNumber($data)

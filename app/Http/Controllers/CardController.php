@@ -21,15 +21,6 @@ class CardController extends Controller
     {
         $cards = $this->cardRepository->getActiveCards();
 
-        $cards = $cards->map(function ($card, $key) {
-            $cardService = CardServices::getServices()[$card->type];
-            return $cardService->getCardHolderInfo($card->toArray()) + [
-                    'id' => $card->id,
-                    'number' => $card->number,
-                    'type' => $card->type
-                ];
-        });
-
         return view('cards.index')->with([
             'cards' => $cards,
             'totalBalance' => $cards->sum('amount')

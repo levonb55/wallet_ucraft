@@ -30,5 +30,8 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('cards', 'CardController@index')->name('cards.index');
     Route::post('cards', 'CardController@store')->name('cards.store');
     Route::delete('cards/{card}', 'CardController@destroy')->name('cards.destroy');
+
+    // Payment routes
+    Route::get('payments', 'PaymentController@index')->name('payments.index');
 });
 

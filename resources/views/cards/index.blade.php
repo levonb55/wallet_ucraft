@@ -5,6 +5,12 @@
 
         @include('blocks.messages')
 
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <p>Total Balance: {{format_number($totalBalance)}}</p>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-6">
                <h4>Available Cards</h4>
