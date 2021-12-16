@@ -22,7 +22,7 @@
                     <ul class="list-group">
                         @foreach($cards as $card)
                             <li class="list-group-item">
-                                <i class="fab fa-cc-{{$card['type']}}"></i>
+                                <img src="https://img.icons8.com/color/48/000000/{{$card['type']}}.png"/>
                                 <ul class="list-group">
                                     <li class="list-group-item">Number: {{$card['number']}}</li>
                                     <li class="list-group-item">Balance: {{format_number($card['amount'])}}</li>
@@ -61,7 +61,7 @@
                             <label for="card-type">Choose card type</label>
                             <select class="form-control" id="card-type" name="type">
                                 <option value="{{\App\Models\Card::CARD_VISA}}">Visa</option>
-                                <option value="{{\App\Models\Card::CARD_MASTER}}">Master</option>
+                                <option value="{{\App\Models\Card::CARD_MASTERCARD}}">Master</option>
                             </select>
                         </div>
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Card extends Model
 {
     const CARD_VISA = 'visa';
-    const CARD_MASTER = 'mastercard';
+    const CARD_MASTERCARD = 'mastercard';
     const STATUS_DELETED = '0';
     const STATUS_ACTIVE = '1';
     const STATUS_NOT_ACTIVE = '2';
@@ -30,7 +30,7 @@ class Card extends Model
     {
         return [
           self::CARD_VISA,
-          self::CARD_MASTER
+          self::CARD_MASTERCARD
         ];
     }
 

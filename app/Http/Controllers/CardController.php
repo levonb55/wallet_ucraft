@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\Repositories\CardRepository;
+use App\Finance\CardServices;
 use App\Http\Requests\CardRequest;
 use App\Models\Card;
-use App\Services\VisaService;
 use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
@@ -22,8 +22,8 @@ class CardController extends Controller
         $cards = $this->cardRepository->getActiveCards();
 
         $cards = $cards->map(function ($card, $key) {
-            $visaService = new VisaService();
-            return $visaService->getCardHolderInfo($card->toArray()) + [
+            $cardService = CardServices::getServices()[$card->type];
+            return $cardService->getCardHolderInfo($card->toArray()) + [
                     'id' => $card->id,
                     'number' => $card->number,
                     'type' => $card->type
@@ -52,16 +52,17 @@ class CardController extends Controller
         }
 
         try {
-            $visaService = new VisaService();
-            $cardHolder = $visaService->getCardHolderInfo($data);
+            $cardService = CardServices::getServices()[$data['type']];
+            $cardHolder = $cardService->getCardHolderInfo($data);
             if (!empty($cardHolder)) {
                 $this->cardRepository->create($data);
+                return redirect()->route('cards.index')->with('success', 'This card successfully added!');
             }
+
+            return redirect()->route('cards.index')->with('danger', 'That card doesn\'t exist!');
         } catch (Exception $e) {
             return redirect()->route('cards.index')->with('warning', 'Something went wrong!');
         }
-
-        return redirect()->route('cards.index')->with('success', 'This card successfully added!');
     }
 
     public function destroy(Card $card)
