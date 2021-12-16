@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Repositories\CardRepository;
 use App\Http\Requests\CardRequest;
 use App\Models\Card;
 use App\Services\VisaService;
@@ -9,16 +10,23 @@ use Illuminate\Support\Facades\Auth;
 
 class CardController extends Controller
 {
+    private $cardRepository;
+
+    public function __construct(CardRepository $cardRepository)
+    {
+        $this->cardRepository = $cardRepository;
+    }
+
     public function index()
     {
-        $cards = Auth()->user()->cards()->active()->get()->collect();
+        $cards = $this->cardRepository->getActiveCards();
 
         $cards = $cards->map(function ($card, $key) {
             $visaService = new VisaService();
             return $visaService->getCardHolderInfo($card->toArray()) + [
                     'id' => $card->id,
                     'number' => $card->number,
-                    'type' => Card::CARD_VISA
+                    'type' => $card->type
                 ];
         });
 
@@ -32,14 +40,11 @@ class CardController extends Controller
     {
         $data = $request->validated();
 
-        $card = Card::where([
-            'type' => Card::CARD_VISA,
-            'number' => $data['number'],
-        ])->first();
+        $card = $this->cardRepository->getCardByTypeNumber($data);
 
         if (!empty($card)) {
             if ($card->show_status === Card::STATUS_DELETED) {
-                $card->update(['show_status' => Card::STATUS_ACTIVE]);
+                $this->cardRepository->activateCard($card);
                 return redirect()->route('cards.index')->with('success', 'This card successfully added!');
             }
 
@@ -50,12 +55,7 @@ class CardController extends Controller
             $visaService = new VisaService();
             $cardHolder = $visaService->getCardHolderInfo($data);
             if (!empty($cardHolder)) {
-                Card::create([
-                    'user_id' => Auth::id(),
-                    'type' => Card::CARD_VISA,
-                    'number' => $data['number'],
-                    'show_status' => Card::STATUS_ACTIVE
-                ]);
+                $this->cardRepository->create($data);
             }
         } catch (Exception $e) {
             return redirect()->route('cards.index')->with('warning', 'Something went wrong!');
@@ -67,7 +67,7 @@ class CardController extends Controller
     public function destroy(Card $card)
     {
         if ($card->user_id === Auth::id()) {
-            $card->update(['show_status' => Card::STATUS_DELETED]);
+            $this->cardRepository->deleteCard($card);
             return redirect()->route('cards.index')->with('success', 'You removed that card!');
         }
 
